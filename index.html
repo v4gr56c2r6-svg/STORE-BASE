@@ -5,67 +5,208 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#101a33">
-  <title>STORE BASE</title>
+  <title>STORE BASE | ログイン</title>
+
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
       font-family: sans-serif;
       background: #f3f5fa;
       color: #17233d;
-    }
-
-    header {
-      background: #101a33;
-      color: white;
-      padding: 22px;
-    }
-
-    main {
-      max-width: 900px;
-      margin: 40px auto;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
       padding: 20px;
     }
 
-    .panel {
+    .container {
+      width: 100%;
+      max-width: 420px;
       background: white;
-      border-radius: 14px;
-      padding: 28px;
-      box-shadow: 0 4px 18px #0000000a;
+      border-radius: 18px;
+      padding: 32px 24px;
+      box-shadow: 0 8px 30px #0000000d;
     }
 
-    h1 {
+    .logo {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .logo h1 {
+      font-size: 28px;
       margin: 0;
-      font-size: 24px;
+      color: #101a33;
     }
 
-    h2 {
-      margin-top: 0;
+    .logo p {
+      color: #8992a5;
+      font-size: 13px;
     }
 
-    .status {
-      color: #16845b;
+    h2 { font-size: 21px; }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #dce1eb;
+      border-radius: 9px;
+      margin: 8px 0 16px;
+      font-size: 16px;
+    }
+
+    label {
+      font-size: 13px;
       font-weight: bold;
     }
+
+    button {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 9px;
+      background: #172c50;
+      color: white;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+
+    button.secondary {
+      background: white;
+      color: #172c50;
+      border: 1px solid #172c50;
+    }
+
+    .message {
+      font-size: 13px;
+      margin-top: 15px;
+      text-align: center;
+      color: #d04444;
+    }
+
+    .switch {
+      text-align: center;
+      font-size: 13px;
+      margin-top: 22px;
+      color: #68748a;
+    }
+
+    .switch button {
+      background: none;
+      color: #2458a6;
+      padding: 5px;
+      width: auto;
+    }
+
+    .hidden { display: none; }
   </style>
 </head>
+
 <body>
-
-  <header>
-    <h1>STORE BASE</h1>
-    <p>店舗業務管理システム</p>
-  </header>
-
-  <main>
-    <section class="panel">
-      <h2>ようこそ STORE BASEへ</h2>
+  <div class="container">
+    <div class="logo">
+      <h1>STORE BASE</h1>
       <p>店舗業務をもっと簡単に。</p>
-      <p class="status">システム準備中</p>
-    </section>
-  </main>
+    </div>
 
+    <section id="loginForm">
+      <h2>ログイン</h2>
+
+      <label>メールアドレス</label>
+      <input id="loginEmail" type="email"
+        placeholder="example@email.com">
+
+      <label>パスワード</label>
+      <input id="loginPassword" type="password"
+        placeholder="パスワード">
+
+      <button id="loginButton">ログイン</button>
+
+      <div class="switch">
+        初めての方はこちら
+        <button id="showRegister">新規登録</button>
+      </div>
+    </section>
+
+    <section id="registerForm" class="hidden">
+      <h2>新規会員登録</h2>
+
+      <label>メールアドレス</label>
+      <input id="registerEmail" type="email"
+        placeholder="example@email.com">
+
+      <label>パスワード（6文字以上）</label>
+      <input id="registerPassword" type="password"
+        placeholder="パスワード">
+
+      <button id="registerButton">無料でアカウントを作成</button>
+
+      <div class="switch">
+        既にアカウントをお持ちの方
+        <button id="showLogin">ログイン</button>
+      </div>
+    </section>
+
+    <p id="message" class="message"></p>
+  </div>
+
+  <script type="module">
+    import { loginUser, registerUser }
+      from "./js/auth.js";
+
+    const loginForm = document.getElementById("loginForm");
+    const registerForm = document.getElementById("registerForm");
+    const message = document.getElementById("message");
+
+    document.getElementById("showRegister").onclick = () => {
+      loginForm.classList.add("hidden");
+      registerForm.classList.remove("hidden");
+      message.textContent = "";
+    };
+
+    document.getElementById("showLogin").onclick = () => {
+      registerForm.classList.add("hidden");
+      loginForm.classList.remove("hidden");
+      message.textContent = "";
+    };
+
+    document.getElementById("registerButton").onclick =
+      async () => {
+        message.textContent = "登録中...";
+
+        const email =
+          document.getElementById("registerEmail").value.trim();
+
+        const password =
+          document.getElementById("registerPassword").value;
+
+        const result = await registerUser(email, password);
+
+        message.textContent = result.success
+          ? "会員登録に成功しました！"
+          : result.message;
+      };
+
+    document.getElementById("loginButton").onclick =
+      async () => {
+        message.textContent = "ログイン中...";
+
+        const email =
+          document.getElementById("loginEmail").value.trim();
+
+        const password =
+          document.getElementById("loginPassword").value;
+
+        const result = await loginUser(email, password);
+
+        message.textContent = result.success
+          ? "ログインに成功しました！"
+          : result.message;
+      };
+  </script>
 </body>
 </html>
