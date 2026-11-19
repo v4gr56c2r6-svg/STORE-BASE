@@ -4,12 +4,14 @@ import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/f
 import {
   addDoc,
   collection,
+  deleteDoc,
   doc,
   onSnapshot,
   orderBy,
   query,
   runTransaction,
-  serverTimestamp
+  serverTimestamp,
+  updateDoc
 } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
 
 const appMain = document.getElementById("appMain");
@@ -26,11 +28,18 @@ const searchInput = document.getElementById("searchInput");
 const productName = document.getElementById("productName");
 const productSku = document.getElementById("productSku");
 const productQuantity = document.getElementById("productQuantity");
+const editDialog = document.getElementById("editDialog");
+const editForm = document.getElementById("editForm");
+const editProductName = document.getElementById("editProductName");
+const editProductSku = document.getElementById("editProductSku");
+const editMessage = document.getElementById("editMessage");
+const saveEditButton = document.getElementById("saveEditButton");
 
 let currentUser = null;
 let products = [];
 let dataReady = false;
 let stopWatchingProducts = null;
+let editingProductId = null;
 
 function setStatus(message, kind = "info") {
   dataStatus.textContent = message;
@@ -83,6 +92,18 @@ function adjustStockButton(product, delta, label) {
   return button;
 }
 
+function rowActionButton(product, action, label, isDanger = false) {
+  const button = document.createElement("button");
+  button.className = `row-action-button${isDanger ? " danger" : ""}`;
+  button.type = "button";
+  button.dataset.productId = product.id;
+  button.dataset.action = action;
+  button.textContent = label;
+  button.setAttribute("aria-label", `${product.name}の商品を${label}`);
+  button.disabled = !dataReady;
+  return button;
+}
+
 function renderProducts() {
   const term = searchInput.value.trim().toLocaleLowerCase("ja-JP");
   const filtered = products.filter((product) =>
@@ -111,6 +132,11 @@ function renderProducts() {
     controls.append(adjustStockButton(product, 1, "増やす"));
     controls.append(createTextElement("span", "quantity-hint", productUpdatedAt(product.updatedAt)));
     row.append(controls);
+    const actions = document.createElement("div");
+    actions.className = "product-actions";
+    actions.append(rowActionButton(product, "edit", "編集"));
+    actions.append(rowActionButton(product, "delete", "削除", true));
+    row.append(actions);
     productList.append(row);
   }
 }
@@ -204,8 +230,37 @@ productList.addEventListener("click", async (event) => {
   const button = event.target.closest("button[data-product-id]");
   if (!button || !dataReady || !currentUser) return;
   const product = products.find((item) => item.id === button.dataset.productId);
+  if (!product) return;
+
+  if (button.dataset.action === "edit") {
+    editingProductId = product.id;
+    editProductName.value = product.name;
+    editProductSku.value = product.sku;
+    editMessage.textContent = "";
+    editMessage.dataset.kind = "";
+    saveEditButton.disabled = false;
+    editDialog.showModal();
+    return;
+  }
+
+  if (button.dataset.action === "delete") {
+    const confirmed = window.confirm(`「${product.name}」を削除します。\nこの操作は取り消せません。削除しますか？`);
+    if (!confirmed) return;
+    button.disabled = true;
+    try {
+      await deleteDoc(doc(db, "users", currentUser.uid, "products", product.id));
+      setFormMessage("商品を削除しました。", "success");
+    } catch (error) {
+      setFormMessage(error?.code === "permission-denied"
+        ? "削除できません。Firestoreの削除ルールを確認してください。"
+        : "商品を削除できませんでした。もう一度お試しください。", "error");
+      button.disabled = false;
+    }
+    return;
+  }
+
   const delta = Number(button.dataset.delta);
-  if (!product || ![-1, 1].includes(delta) || (delta < 0 && product.quantity === 0)) return;
+  if (![-1, 1].includes(delta) || (delta < 0 && product.quantity === 0)) return;
 
   button.disabled = true;
   try {
@@ -224,6 +279,49 @@ productList.addEventListener("click", async (event) => {
       ? "在庫を更新できません。Firestoreの書き込みルールを確認してください。"
       : "在庫を更新できませんでした。もう一度お試しください。", "error");
   }
+});
+
+editForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  if (!dataReady || !currentUser || !editingProductId || !editForm.reportValidity()) return;
+  const name = editProductName.value.trim();
+  const sku = editProductSku.value.trim();
+  if (!name) {
+    editMessage.textContent = "商品名を入力してください。";
+    editMessage.dataset.kind = "error";
+    return;
+  }
+
+  saveEditButton.disabled = true;
+  editMessage.textContent = "商品情報を保存しています...";
+  editMessage.dataset.kind = "";
+  try {
+    await updateDoc(doc(db, "users", currentUser.uid, "products", editingProductId), {
+      name,
+      sku,
+      updatedAt: serverTimestamp()
+    });
+    editDialog.close();
+    setFormMessage("商品情報を更新しました。", "success");
+  } catch (error) {
+    editMessage.textContent = error?.code === "permission-denied"
+      ? "変更を保存できません。Firestoreの更新ルールを確認してください。"
+      : "商品情報を保存できませんでした。もう一度お試しください。";
+    editMessage.dataset.kind = "error";
+    saveEditButton.disabled = false;
+  }
+});
+
+function closeEditDialog() {
+  editDialog.close();
+  editingProductId = null;
+}
+
+document.getElementById("closeEditDialog").addEventListener("click", closeEditDialog);
+document.getElementById("cancelEditButton").addEventListener("click", closeEditDialog);
+editDialog.addEventListener("close", () => {
+  editingProductId = null;
+  editForm.reset();
 });
 
 searchInput.addEventListener("input", renderProducts);
