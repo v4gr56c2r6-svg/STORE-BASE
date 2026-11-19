@@ -11,15 +11,8 @@ Each product document contains:
 - `quantity`: integer from 0 through 999,999
 - `createdAt` and `updatedAt`: Firestore timestamps
 
-## Access rules still need review
+## Proposed Firestore rules
 
-This repository does not include a Firestore rules file, so the effective rules in the Firebase project could not be verified from the source. The client scopes every query to the signed-in user's UID, but client-side scoping is not an access-control boundary by itself.
+`firestore.rules` contains the rules proposed with this PR. They allow a signed-in user to read and create products only under their own `users/{uid}/products` path. Updates are limited to the quantity and update timestamp; deletion and every other document path remain denied. Product fields, lengths, timestamps, and the quantity range are checked.
 
-Before entering real product or inventory information, an administrator must confirm in Firebase Console that:
-
-- Requests must be authenticated.
-- A signed-in user can read or write only the `users/{uid}` path matching their own UID.
-- Product fields and types are validated, including nonnegative integer quantities.
-- Access to all other users' paths and unknown fields is denied.
-
-No Firebase security rules are changed by this project update. If reads are denied, the inventory form stays disabled. If writes are denied, the page shows an error and the failed change is not treated as saved.
+The active rules in Firebase Console have not been changed or verified. This file is source code only; it does not deploy rules to the Firebase project. Before entering real product or inventory information, an administrator must review the proposal and apply it in Firebase Console. If reads are denied, the inventory form stays disabled. If writes are denied, the page shows an error and the failed change is not treated as saved.
