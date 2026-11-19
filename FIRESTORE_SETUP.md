@@ -13,6 +13,6 @@ Each product document contains:
 
 ## Proposed Firestore rules
 
-`firestore.rules` contains the rules proposed with this PR. They allow a signed-in user to read and create products only under their own `users/{uid}/products` path. Updates are limited to the quantity and update timestamp; deletion and every other document path remain denied. Product fields, lengths, timestamps, and the quantity range are checked.
+`firestore.rules` contains the proposed rules. A signed-in user can read, create, update, and delete products only under their own `users/{uid}/products` path. Updates may change the product name, SKU, quantity, and update timestamp; the creation timestamp stays fixed. Product fields, lengths, timestamps, and the quantity range are checked. Deleting a product is permanent, and the app asks for confirmation first.
 
-The active rules in Firebase Console have not been changed or verified. This file is source code only; it does not deploy rules to the Firebase project. Before entering real product or inventory information, an administrator must review the proposal and apply it in Firebase Console. If reads are denied, the inventory form stays disabled. If writes are denied, the page shows an error and the failed change is not treated as saved.
+The previously published Firebase Console rules allow inventory reads and stock-count changes. This file's new edit and delete permissions are source code only; they do not change the Firebase project until an administrator reviews and publishes the updated rules in Firebase Console. If an edit or delete is denied before then, the page shows an error and does not treat the change as saved.
