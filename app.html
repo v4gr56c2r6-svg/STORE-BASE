@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10233F">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="STORE BASEの商品・在庫管理画面です。">
+  <title>在庫管理 | STORE BASE</title>
+  <link rel="icon" href="./assets/brand-mark.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./app.css">
+  <script type="module" src="./app.js"></script>
+</head>
+<body class="app-body">
+  <header class="site-header app-header">
+    <div class="header-inner">
+      <a class="brand" href="./" aria-label="STORE BASE ホーム"><img src="./assets/brand-mark.svg" alt="" width="42" height="42"><span class="brand-name">STORE<span>BASE</span></span></a>
+      <div class="app-account"><span id="userEmail" class="user-email">確認中...</span><button id="logoutButton" class="logout-button" type="button">ログアウト</button></div>
+    </div>
+  </header>
+  <main id="appMain" class="app-main page-width" hidden>
+    <section class="app-title-row">
+      <div><p class="eyebrow">INVENTORY</p><h1>在庫を、かんたんに。</h1><p class="app-lead">商品を登録して、現在の在庫数を管理できます。</p></div>
+      <a class="app-home-link" href="./">公式サイトへ <span aria-hidden="true">↗</span></a>
+    </section>
+
+    <section class="access-note" aria-labelledby="access-note-title">
+      <span class="access-note-icon" aria-hidden="true">!</span>
+      <div><h2 id="access-note-title">実データを登録する前に</h2><p>在庫情報はログイン中のアカウント別に読み込みます。商品情報を使い始める前に、Firebaseのアクセスルールがアカウント本人のデータだけを許可していることを管理者が確認してください。</p></div>
+    </section>
+
+    <p id="dataStatus" class="data-status" role="status" aria-live="polite">在庫データの接続を確認しています...</p>
+
+    <section class="inventory-summary" aria-label="在庫の概要">
+      <article class="summary-card"><span class="summary-icon summary-blue" aria-hidden="true"><svg viewBox="0 0 28 28"><path d="m14 3 10 5.5v11L14 25 4 19.5v-11L14 3Z"/><path d="m4.5 8.7 9.5 5.5 9.5-5.5M14 14.2V25"/></svg></span><div><p>登録商品数</p><strong id="productCount">—</strong><span>点</span></div></article>
+      <article class="summary-card"><span class="summary-icon summary-mint" aria-hidden="true"><svg viewBox="0 0 28 28"><path d="M6 6.5h16v17H6zM10 3.5v6M18 3.5v6M6 12h16M10 16h8M10 20h5"/></svg></span><div><p>在庫合計</p><strong id="stockTotal">—</strong><span>点</span></div></article>
+      <article class="summary-card"><span class="summary-icon summary-amber" aria-hidden="true"><svg viewBox="0 0 28 28"><path d="M14 4 25 23H3L14 4Z"/><path d="M14 11v5M14 20h.01"/></svg></span><div><p>在庫0の商品</p><strong id="outOfStockCount">—</strong><span>点</span></div></article>
+    </section>
+
+    <section class="inventory-panel" aria-labelledby="products-heading">
+      <div class="panel-heading"><div><p class="eyebrow">PRODUCTS</p><h2 id="products-heading">商品一覧</h2></div><label class="search-field"><span class="sr-only">商品を検索</span><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.6"/><path d="m16 16 4.4 4.4"/></svg><input id="searchInput" type="search" placeholder="商品名・SKUで検索" autocomplete="off"></label></div>
+      <form id="productForm" class="product-form">
+        <div class="form-field"><label for="productName">商品名 <span>必須</span></label><input id="productName" name="name" type="text" maxlength="80" placeholder="例：ブルーのマグカップ" required></div>
+        <div class="form-field"><label for="productSku">SKU <small>任意</small></label><input id="productSku" name="sku" type="text" maxlength="40" placeholder="例：MUG-BL-01"></div>
+        <div class="form-field quantity-field"><label for="productQuantity">初期在庫</label><input id="productQuantity" name="quantity" type="number" inputmode="numeric" min="0" max="999999" step="1" value="0" required></div>
+        <button id="addProductButton" class="button add-button" type="submit" disabled><span aria-hidden="true">＋</span> 商品を追加</button>
+      </form>
+      <p id="formMessage" class="form-message" role="status" aria-live="polite"></p>
+      <div class="product-list-heading" aria-hidden="true"><span>商品</span><span>SKU</span><span>在庫数</span><span>在庫を調整</span></div>
+      <div id="productList" class="product-list" aria-live="polite"></div>
+      <div id="emptyState" class="empty-state" hidden><span aria-hidden="true">◇</span><h3>商品はまだ登録されていません</h3><p>上のフォームから、最初の商品を追加できます。</p></div>
+      <div id="noResults" class="empty-state compact" hidden><h3>該当する商品がありません</h3><p>検索語を変えて、もう一度お試しください。</p></div>
+    </section>
+    <p class="app-footnote">在庫数の「−」操作では、在庫は0より少なくなりません。</p>
+  </main>
+  <div id="authLoading" class="auth-loading" role="status"><span class="loading-dot"></span> アカウントを確認しています...</div>
+</body>
+</html>

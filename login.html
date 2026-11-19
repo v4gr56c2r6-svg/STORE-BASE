@@ -119,7 +119,10 @@
       message.textContent = "ログイン中...";
       const result = await loginUser(document.getElementById("loginEmail").value.trim(), document.getElementById("loginPassword").value);
       message.textContent = result.success ? "ログインに成功しました！" : result.message;
-      if (result.success) message.dataset.kind = "success";
+      if (result.success) {
+        message.dataset.kind = "success";
+        window.location.assign("./app.html");
+      }
       button.disabled = false;
     });
 
@@ -132,7 +135,10 @@
       message.textContent = "登録中...";
       const result = await registerUser(document.getElementById("registerEmail").value.trim(), document.getElementById("registerPassword").value);
       message.textContent = result.success ? "会員登録に成功しました！" : result.message;
-      if (result.success) message.dataset.kind = "success";
+      if (result.success) {
+        message.dataset.kind = "success";
+        window.location.assign("./app.html");
+      }
       button.disabled = false;
     });
 
