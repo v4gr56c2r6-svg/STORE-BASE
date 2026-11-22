@@ -38,9 +38,9 @@ service cloud.firestore {
         && request.resource.data.createdAt == resource.data.createdAt
         && request.resource.data.updatedAt == request.time
         && request.resource.data.diff(resource.data)
-          .affectedKeys().hasOnly(['quantity', 'updatedAt']);
+          .affectedKeys().hasOnly(['name', 'sku', 'quantity', 'updatedAt']);
 
-      allow delete: if false;
+      allow delete: if ownsUserPath(userId);
     }
   }
 }

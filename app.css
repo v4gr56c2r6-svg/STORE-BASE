@@ -47,7 +47,7 @@
 .form-message { min-height: 18px; margin: -9px 24px 8px; color: #617188; font-size: 9px; }
 .form-message[data-kind="error"] { color: #a33d3d; }
 .form-message[data-kind="success"] { color: #217449; }
-.product-list-heading, .product-row { display: grid; grid-template-columns: minmax(180px, 1.6fr) minmax(120px, 1fr) 95px 190px; align-items: center; gap: 12px; }
+.product-list-heading, .product-row { display: grid; grid-template-columns: minmax(170px, 1.4fr) minmax(100px, .8fr) 80px 150px 130px; align-items: center; gap: 12px; }
 .product-list-heading { min-height: 39px; padding: 0 25px; border-top: 1px solid #edf0f4; border-bottom: 1px solid #edf0f4; color: #8a96a5; background: #fbfcfe; font-size: 9px; }
 .product-row { min-height: 70px; padding: 10px 25px; border-bottom: 1px solid #eff2f6; }
 .product-row:last-child { border-bottom: 0; }
@@ -61,6 +61,23 @@
 .stock-button:hover:not(:disabled) { border-color: #9eb8d8; color: var(--blue-dark); background: #f4f8ff; }
 .stock-button:disabled { cursor: wait; opacity: .45; }
 .quantity-hint { color: #92a0b1; font-size: 8px; }
+.product-actions { display: flex; align-items: center; gap: 6px; }
+.row-action-button { min-height: 30px; padding: 0 9px; border: 1px solid #dbe4ef; border-radius: 7px; color: #47698f; background: #fff; font-size: 9px; font-weight: 700; cursor: pointer; }
+.row-action-button:hover:not(:disabled) { border-color: #9eb8d8; color: var(--blue-dark); background: #f4f8ff; }
+.row-action-button.danger { color: #a34545; }
+.row-action-button.danger:hover:not(:disabled) { border-color: #e2bcbc; background: #fff7f7; }
+.row-action-button:disabled { cursor: wait; opacity: .5; }
+.edit-dialog { width: min(440px, calc(100% - 32px)); padding: 0; border: 1px solid #e2e8f0; border-radius: 16px; color: var(--ink); background: #fff; box-shadow: 0 24px 80px rgba(16,35,63,.24); }
+.edit-dialog::backdrop { background: rgba(11,25,45,.46); backdrop-filter: blur(2px); }
+.edit-form { padding: 23px; }
+.edit-dialog-heading { display: flex; align-items: start; justify-content: space-between; gap: 14px; margin-bottom: 20px; }
+.edit-dialog-heading .eyebrow { margin: 0 0 4px; font-size: 9px; }
+.edit-dialog-heading h2 { margin: 0; color: var(--navy); font-size: 18px; }
+.dialog-close { width: 32px; height: 32px; border: 1px solid #e1e7ef; border-radius: 8px; color: #63748a; background: #fff; font-size: 21px; line-height: 1; cursor: pointer; }
+.edit-form .form-field + .form-field { margin-top: 14px; }
+.edit-dialog-actions { display: flex; justify-content: end; gap: 9px; margin-top: 4px; }
+.edit-dialog-actions .add-button { min-width: 112px; }
+.edit-form .form-message { margin: 12px 0; }
 .empty-state { padding: 42px 20px 46px; text-align: center; }
 .empty-state > span { color: #8aa9d3; font-size: 27px; }
 .empty-state h3 { margin: 7px 0 4px; color: #42546d; font-size: 12px; }
@@ -71,7 +88,7 @@
 .auth-loading { min-height: calc(100vh - 72px); display: flex; align-items: center; justify-content: center; gap: 10px; color: #6f7f92; font-size: 12px; }
 .loading-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--blue); box-shadow: 0 0 0 5px #e8f1ff; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; clip-path: inset(50%); }
-@media (max-width: 760px) {
+@media (max-width: 900px) {
   .app-header .header-inner { height: 66px; }
   .app-account { gap: 9px; }
   .user-email { max-width: 122px; font-size: 9px; }
@@ -107,7 +124,10 @@
   .product-meta-mobile { display: block; margin-top: 4px; color: #8693a3; font-size: 8px; }
   .product-quantity { grid-column: 2; grid-row: 1; justify-self: end; font-size: 13px; }
   .quantity-controls { grid-column: 1 / -1; gap: 6px; padding-top: 4px; }
+  .product-actions { grid-column: 1 / -1; justify-content: flex-end; padding-top: 2px; }
   .stock-button { width: 29px; height: 29px; }
+  .row-action-button { min-height: 32px; padding: 0 12px; }
   .quantity-hint { margin-left: 2px; }
   .app-footnote { font-size: 8px; text-align: left; }
+  .edit-form { padding: 19px; }
 }
